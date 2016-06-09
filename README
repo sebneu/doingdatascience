@@ -1,0 +1,9 @@
+
+'column_types.csv' lists the (heuristic) types of all columns:
+- 'file': path to the CSV file
+- 'column': the index of the respective column (starting with 0)
+- 'type': the heuristically determined type (NUMERIC, ENTITY, TEXT, ID)
+- 'avg_tokens': the count of words which appears most in the column values (e.g., if 2 most of the cells have 2 words)
+
+
+

@@ -1,1 +1,1 @@
-{"lengths": {"1": 17236, "3": 307, "2": 892, "4+": 486}, "tables": 1612, "labels": {"TEXT": 424, "ID": 4136, "NUMERIC": 6963, "ENTITY": 7422}, "errors": 60, "columns": 18921}
+{"lengths": {"1": 16269, "3": 198, "2": 826, "4+": 504}, "tables": 1565, "labels": {"TEXT": 510, "ID": 3512, "NUMERIC": 6914, "ENTITY": 6861}, "errors": 107, "columns": 17797}
