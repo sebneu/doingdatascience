@@ -32,10 +32,12 @@ class ColumnTypesReader():
         return self.get_rows_by_column('type', data_types)
 
 
-def get_textual_columns():
+def get_textual_columns(limit=None):
     reader = ColumnTypesReader('column_types.csv', ',')
-    textual_columns = reader.get_columns_by_types(['TEXT'])
-    assert len(textual_columns) == 510
+    textual_columns = reader.get_columns_by_types(['TEXT'])#[:2]
+    if limit:
+        textual_columns = textual_columns[:limit]
+    # assert len(textual_columns) == 510
     return textual_columns.iterrows()
 
 
