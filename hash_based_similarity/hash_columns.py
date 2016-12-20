@@ -36,7 +36,7 @@ def read_tables(fps, delimiter, shuffle=False, limit=False):
     Input:
     fps <list of strings>  full paths to files to read tables from
 
-    Return:
+    Output:
     tables <dict> {file_path: rows_generator}
     '''
     tables = {}
@@ -71,7 +71,7 @@ def hash_column_str(hash_func, column):
     Input:
     column <Series>  one column from pandas data frame
 
-    Return:
+    Output:
     hash <str> hash value of the column
     '''
     column_str = str(column)
@@ -83,7 +83,7 @@ def hash_column_row_by_row(column, hash_func=None, hash_it=True, ziped=False):
     Input:
     column <Series>  one column from pandas data frame
 
-    Return:
+    Output:
     hash <str> hash value of the column
     '''
 
@@ -202,7 +202,7 @@ def hash_column_rows(column):
     Input:
     column <Series>  one column from pandas data frame
 
-    Return:
+    Output:
     [] hash <str> list of hash strings as the column representation
     '''
 
@@ -408,5 +408,5 @@ def hash_columns(hashbits=8, limit=None):
 
 
 if __name__ == '__main__':
-    # test_hash_column()
-    hash_columns()
+    test_hash_column()
+    # hash_columns()
