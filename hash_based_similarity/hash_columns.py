@@ -16,7 +16,8 @@ from hashes.simhash import simhash
 from itertools import combinations, permutations
 from column_types_reader import get_textual_columns
 
-PATH = '../data/at_dump_v1'
+RESULTS_PATH = '../results/'
+DATA_PATH = '../data/at_dump_v1'
 FILES = ['opat/httpwww.wienticket.atfeedsvorverkauf.phpformatcsv',
          'opat/httpwww.apcs.atapcsausgleichsenergiemarktstatistikenopendatastatistikrz2013.csv']
 
@@ -57,7 +58,7 @@ def test_read_tables():
     # collect file paths
     fps = []
     for file in FILES:
-        fps.append(os.path.join(PATH, file))
+        fps.append(os.path.join(DATA_PATH, file))
     print fps
     tables = read_tables(fps, delimiter=';')
     for path, table in tables.items():
@@ -121,7 +122,7 @@ def test_hash_column1(n_rows=False):
     Input:
     n_rows <int>  limit the number of rows processed from the column
     '''
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     table = read_tables([fp], delimiter=';')[fp]  # get the table as a df
     print table.columns.values  # show the header
     # get one column of the table
@@ -139,7 +140,7 @@ def test_hash_column1(n_rows=False):
 
 
 def test_hash_column_length():
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     table = read_tables([fp], delimiter=';')[fp]  # get the table as a df
     print table.columns.values  # show the header
     # get one column of the table
@@ -225,7 +226,7 @@ def hash_column_rows(column):
 
 
 def test_hash_column_rows():
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     table = read_tables([fp], delimiter=';')[fp]  # get the table as a df
     print table.columns.values  # show the header
     # get one column of the table
@@ -241,7 +242,7 @@ def test_split_column(split_row=False, limit=120, hashbits=8, hash_it=True):
     Input:
     split_row <int>  index of the row on which to split the column in two
     '''
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     table = read_tables([fp], delimiter=';')[fp]  # get the table as a df
     # print table.columns.values  # show the header
     # get one column of the table
@@ -269,7 +270,7 @@ def test_split_column(split_row=False, limit=120, hashbits=8, hash_it=True):
 
 
 def test_simhash_sort(hashbits=8, limit=120):
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     table = read_tables([fp], delimiter=';')[fp]  # get the table as a df
     # print table.columns.values  # show the header
     # get one column of the table
@@ -293,7 +294,7 @@ def hash_column(column, hash_func):
 
 
 def sample_column(limit, shuffle=False):
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     # get the table as a df
     table = read_tables([fp], delimiter=';', shuffle=shuffle)[fp]
     column = table['Ort']
@@ -327,7 +328,7 @@ def column_in_half(column, hash_func):
 def test_hash_column(hashbits=8, limit=False):
     # get a sample column
     # column = sample_column(limit, shuffle=True)
-    fp = os.path.join(PATH, FILES[0])  # choose first sample file
+    fp = os.path.join(DATA_PATH, FILES[0])  # choose first sample file
     # get the table as a df
     table = read_tables([fp], delimiter=';', shuffle=True, limit=limit)[fp]
     # print header - columns' labels
@@ -373,7 +374,7 @@ def find_similar_hashed_columns(hashbits=8, limit=None):
         col_id = column_description['column']
         label = file + '_' + str(col_id)
         # print "Column: " + label
-        fp = os.path.join(PATH, file)  # choose first sample file
+        fp = os.path.join(DATA_PATH, file)  # choose first sample file
         # get the table as a df
         # df = pd.read_csv(fp)
         try:
@@ -409,36 +410,51 @@ def find_similar_hashed_columns(hashbits=8, limit=None):
 
 def show_similar_columns(similar_columns):
     print "Found " + str(len(similar_columns)) + " groups of similar columns:"
-    for cluster in similar_columns:
+    for idx, cluster in enumerate(similar_columns):
+        # write the cluster of similar columns into a separate csv file
+        # df = pd.DataFrame()
+        # df.columns = cluster
+        similar_columns = []
         print str(len(cluster)) + " similar columns:"
         print cluster
         for column_label in cluster:
             print "Column: " + column_label
             file, col_id = column_label.split('_')
-            fp = os.path.join(PATH, file)  # choose first sample file
+            fp = os.path.join(DATA_PATH, file)  # choose first sample file
             # get the table as a df
             # df = pd.read_csv(fp)
             try:
                 csvr = anycsv.reader(filename=fp)
                 # skip first 3 lines to avoid description and header lines
                 h = csvr.next()
-                h = csvr.next()
-                h = csvr.next()
-                while len(h) <= 1:
-                    # possibly description line
-                    h = csvr.next()
+                # h = csvr.next()
+                # h = csvr.next()
+                # while len(h) <= 1:
+                #     # possibly description line
+                #     h = csvr.next()
                 # setup columns
                 columns = [[] for _ in range(len(h))]
                 for row in csvr:
                     for i, cell in enumerate(row):
-                        columns[i].append(cell)
+                        columns[i].append(cell.encode('utf-8'))
                 # for col_id, c in enumerate(columns):
                 #     print col_id
                 column = columns[int(col_id)]
-                print column
+                print column[:5]
+                similar_columns.append(pd.Series(column))
+                # add column to the table
+                # adjust the size of the dataframe to accomodate the new column
+                # df = df.assign(column_values=pd.Series(column))
+                # # label column
+                # df = df.rename(index=str, columns={"column_values": column_label})
+                # print df
                 # print "of length " +  str(len(column))
             except Exception as e:
                 print e
+        # print len(df.columns)
+        # print similar_columns
+        df = pd.concat(similar_columns, axis=1).reset_index()
+        df.to_csv(RESULTS_PATH + 'cluster' + str(idx) + '.csv')
 
 
 if __name__ == '__main__':
