@@ -361,7 +361,10 @@ def test_hash_column(hashbits=8, limit=False):
         print hash1.similarity(hash2)
 
 
-def hash_columns(hashbits=8, limit=None):
+def find_similar_hashed_columns(hashbits=8, limit=None):
+    '''
+    Find similar columns using simhash
+    '''
     hashes = {}
     hash_func = SimHash(hashbits)
     textual_columns_iterator = get_textual_columns(limit)
@@ -369,7 +372,7 @@ def hash_columns(hashbits=8, limit=None):
         file = column_description['file']
         col_id = column_description['column']
         label = file + '_' + str(col_id)
-        print "Column: " + label
+        # print "Column: " + label
         fp = os.path.join(PATH, file)  # choose first sample file
         # get the table as a df
         # df = pd.read_csv(fp)
@@ -390,7 +393,7 @@ def hash_columns(hashbits=8, limit=None):
             # for col_id, c in enumerate(columns):
             #     print col_id
             column = columns[col_id]
-            print "of length " +  str(len(column))
+            # print "of length " +  str(len(column))
             hashed_column = hash_column(column, hash_func).hex()
             if hashed_column not in hashes.keys():
                 hashes[hashed_column] = []
@@ -401,12 +404,44 @@ def hash_columns(hashbits=8, limit=None):
     # print hashes
     similar_columns = [bucket for bucket in hashes.values() if len(bucket) > 1]
     # print similar_columns
+    return similar_columns
+
+
+def show_similar_columns(similar_columns):
     print "Found " + str(len(similar_columns)) + " groups of similar columns:"
     for cluster in similar_columns:
         print str(len(cluster)) + " similar columns:"
         print cluster
+        for column_label in cluster:
+            print "Column: " + column_label
+            file, col_id = column_label.split('_')
+            fp = os.path.join(PATH, file)  # choose first sample file
+            # get the table as a df
+            # df = pd.read_csv(fp)
+            try:
+                csvr = anycsv.reader(filename=fp)
+                # skip first 3 lines to avoid description and header lines
+                h = csvr.next()
+                h = csvr.next()
+                h = csvr.next()
+                while len(h) <= 1:
+                    # possibly description line
+                    h = csvr.next()
+                # setup columns
+                columns = [[] for _ in range(len(h))]
+                for row in csvr:
+                    for i, cell in enumerate(row):
+                        columns[i].append(cell)
+                # for col_id, c in enumerate(columns):
+                #     print col_id
+                column = columns[int(col_id)]
+                print column
+                # print "of length " +  str(len(column))
+            except Exception as e:
+                print e
 
 
 if __name__ == '__main__':
-    test_hash_column()
-    # hash_columns()
+    # test_hash_column()
+    similar_columns = find_similar_hashed_columns(limit=50)
+    show_similar_columns(similar_columns)
