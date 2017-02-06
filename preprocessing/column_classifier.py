@@ -1,3 +1,6 @@
+'''
+Creates column_types.csv
+'''
 import csv
 import json
 
