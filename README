@@ -2,6 +2,8 @@ TabSim (Table similarity)
 
 ### Prerequisites
 * [anycsv](https://github.com/sebneu/anycsv)
+* [python-hashes] (https://github.com/sean-public/python-hashes)
+* [nilsimsa]
 
 ### Pipeline
 
