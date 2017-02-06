@@ -16,7 +16,7 @@ from hashes.simhash import simhash
 from itertools import combinations, permutations
 from column_types_reader import get_textual_columns
 
-PATH = './data/at_dump_v1'
+PATH = '../data/at_dump_v1'
 FILES = ['opat/httpwww.wienticket.atfeedsvorverkauf.phpformatcsv',
          'opat/httpwww.apcs.atapcsausgleichsenergiemarktstatistikenopendatastatistikrz2013.csv']
 
