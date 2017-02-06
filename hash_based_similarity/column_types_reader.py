@@ -33,7 +33,7 @@ class ColumnTypesReader():
 
 
 def get_textual_columns(limit=None):
-    reader = ColumnTypesReader('column_types.csv', ',')
+    reader = ColumnTypesReader('../preprocessing/column_types.csv', ',')
     textual_columns = reader.get_columns_by_types(['TEXT'])#[:2]
     if limit:
         textual_columns = textual_columns[:limit]
