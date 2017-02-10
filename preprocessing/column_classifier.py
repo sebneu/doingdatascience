@@ -1,3 +1,6 @@
+'''
+Creates column_types.csv
+'''
 import csv
 import json
 
@@ -6,6 +9,9 @@ import os
 from collections import defaultdict
 
 import operator
+
+
+PATH = '../data/at_dump_v1/'
 
 
 class ColumnLabel:
@@ -67,7 +73,7 @@ if __name__ == '__main__':
 
     classification = [['file', 'column', 'type', 'avg_tokens']]
 
-    for root, subdirs, files in os.walk('tables'):
+    for root, subdirs, files in os.walk(PATH):
         for filename in files:
             if filename.endswith('.csv'):
                 try:
@@ -91,7 +97,7 @@ if __name__ == '__main__':
                         col_stats['labels'][col.label] += 1
                         col_stats['lengths'][col.length] += 1
                         col_stats['columns'] += 1
-                        classification.append([path.lstrip('tables/at_dump_v1/'), col_id, col.label, col.length])
+                        classification.append([path.lstrip(PATH), col_id, col.label, col.length])
                     col_stats['tables'] += 1
                     print 'processed table: ', filename
                 except Exception as e:
